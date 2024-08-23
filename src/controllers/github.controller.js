@@ -50,25 +50,8 @@ export const searchRepositoriesByLanguage = async (req, res) => {
             }
             defaultBranchRef {
               name
-              target {
-                ... on Commit {
-                  history(first: 10) {
-                    edges {
-                      node {
-                        oid
-                        message
-                        committedDate
-                        author {
-                          name
-                          email
-                        }
-                      }
-                    }
-                  }
-                }
-              }
             }
-            branches: refs(refPrefix: "refs/heads/", first: 5) {
+            branches: refs(refPrefix: "refs/heads/", first: 10) {
               nodes {
                 name
                 target {
@@ -82,13 +65,6 @@ export const searchRepositoriesByLanguage = async (req, res) => {
                     }
                   }
                 }
-              }
-            }
-            releases(first: 10) {
-              nodes {
-                name
-                tagName
-                publishedAt
               }
             }
             languages(first: 10) {
@@ -107,7 +83,7 @@ export const searchRepositoriesByLanguage = async (req, res) => {
   `;
 
     const variables = {
-        queryString: `language:${language} sort:stars-desc`,
+        queryString: language,
         quantity: parseInt(quantity, 10),
     };
 
@@ -158,7 +134,7 @@ export const searchRepositoriesByLanguages = async (req, res) => {
         language: lang,
         query: gql`
         query SearchRepositories($queryString: String!) {
-          search(query: $queryString, type: REPOSITORY, first: 5) {
+          search(query: $queryString, type: REPOSITORY, first: 100) {
             nodes {
               ... on Repository {
                 forkCount
@@ -172,7 +148,7 @@ export const searchRepositoriesByLanguages = async (req, res) => {
         }
       `,
         variables: {
-            queryString: `language:${lang} sort:stars-desc`
+            queryString: lang
         }
     }));
 
